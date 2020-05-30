@@ -14,7 +14,3 @@
         name: 'Index'
     }
 </script>
-
-<style scoped>
-
-</style>
