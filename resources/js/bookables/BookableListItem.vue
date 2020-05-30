@@ -1,8 +1,10 @@
 <template>
-    <div class="card">
+    <div class="card w-100">
         <div class="card-body">
-            <h5 class="card-title">{{ title }}</h5>
-            <p class="card-text">{{ content }}</p>
+            <router-link :to="{ name: 'bookable', params: {id} }">
+                <h5 class="card-title">{{ title }}</h5>
+            </router-link>
+            <p class="card-text">{{ description }}</p>
         </div>
     </div>
 </template>
@@ -11,9 +13,9 @@
     export default {
         name: 'BookableListItem',
         props: {
+            'id': Number,
             'title': String,
-            'content': String,
-            'price': Number
+            'description': String,
         }
     }
 </script>

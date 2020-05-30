@@ -1,16 +1,15 @@
 <template>
     <div>
-        <div class="row mb-4" v-for="row in rows" :key="'row' + row">
+        <div v-if="loading">
+            <p>Data is loading...</p>
+        </div>
+        <div v-else class="row mb-4" v-for="row in rows" :key="'row' + row">
             <div
-                class="col"
+                class="col d-flex align-items-stretch"
                 v-for="(bookable, column) in bookablesInRow(row)"
                 :key="'row' + row + column"
             >
-                <bookable-list-item
-                    :key="bookable.index"
-                    :title="bookable.title"
-                    :content="bookable.content"
-                ></bookable-list-item>
+                <bookable-list-item v-bind="bookable"></bookable-list-item>
             </div>
             <div
                 class="col"
@@ -31,17 +30,18 @@
         },
         data() {
             return {
-                bookables: [
-                    {title: 'Cheap villa', content: 'A very cheap villa'},
-                    {title: 'Cheap villa 2', content: 'A very cheap villa 2'},
-                    {title: 'Cheap villa 3', content: 'A very cheap villa 3'},
-                    {title: 'Cheap villa 4', content: 'A very cheap villa 4'},
-                    {title: 'Cheap villa 5', content: 'A very cheap villa 5'},
-                    {title: 'Cheap villa 6', content: 'A very cheap villa 6'},
-                    {title: 'Cheap villa 7', content: 'A very cheap villa 7'},
-                ],
+                bookables: null,
+                loading: true,
                 columns: 3
             }
+        },
+        created() {
+            const request = axios
+                .get('/api/bookables')
+                .then(response => {
+                    this.bookables = response.data;
+                    this.loading = false;
+                })
         },
         computed: {
             rows() {
