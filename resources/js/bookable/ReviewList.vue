@@ -13,7 +13,7 @@
                 <div class="row pt-4">
                     <div class="col-md-6">John Doe</div>
                     <div class="col-md-6 d-flex justify-content-end">
-                        <star-rating :rating="review.rating" class="fa-sm"></star-rating>
+                        <star-rating :value="review.rating" class="fa-sm"></star-rating>
                     </div>
                 </div>
                 <div class="row">
@@ -33,7 +33,7 @@
     export default {
         name: 'ReviewList',
         props: {
-            bookableId: String
+            bookableId: Number
         },
         data() {
             return {
