@@ -18,7 +18,8 @@ class BookablesTableSeeder extends Seeder
             'title' => 'First House',
             'description' => 'First Description',
             'created_at' => Carbon::now()->format('Y-m-d H:i:s'),
-            'updated_at' => Carbon::now()->format('Y-m-d H:i:s')
+            'updated_at' => Carbon::now()->format('Y-m-d H:i:s'),
+            'price' => 500,
         ]);
 
         factory(Bookable::class, 50)->create();

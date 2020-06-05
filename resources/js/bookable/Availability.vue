@@ -67,7 +67,29 @@
             }
         },
         methods: {
-            check() {
+            async check() {
+                this.loading = true;
+                this.errors = null;
+
+                await this.$store.dispatch('setLastSearch', {
+                    from: this.from,
+                    to: this.to
+                });
+
+                try {
+                    this.status = (await axios.get(
+                        `/api/bookables/${this.bookableId}/availability?from=${this.from}&to=${this.to}`
+                    )).status;
+                } catch (error) {
+                    if (is422(error)) {
+                        this.errors = error.response.data.errors;
+                    }
+                    this.status = error.response.status;
+                }
+                this.$emit('availability', this.hasAvailability);
+                this.loading = false;
+            }
+            /*check() {
                 this.loading = true;
                 this.errors = null;
 
@@ -89,7 +111,7 @@
                         this.status = error.response.status;
                     })
                     .then(() => this.loading = false)
-            }
+            }*/
         },
         computed: {
             hasErrors() {
