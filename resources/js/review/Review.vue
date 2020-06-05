@@ -1,7 +1,10 @@
 <template>
     <div>
+        <success v-if="success">
+            You've left a review, thank you very much!
+        </success>
         <fatal-error v-if="error"></fatal-error>
-        <div class="row" v-else>
+        <div class="row" v-if="!success && !error">
             <div
                 :class="[{'col-md-4': twoColumns}, {'d-none': oneColumn}]"
             >
@@ -68,9 +71,11 @@
 
 <script>
     import {is404, is422} from '../shared/utils/response';
+    import validationErrors from '../shared/mixins/validationErrors';
 
     export default {
         name: 'Review',
+        mixins: [validationErrors],
         data() {
             return {
                 review: {
@@ -82,11 +87,34 @@
                 loading: false,
                 booking: null,
                 error: false,
-                errors: null,
-                sending: false
+                sending: false,
+                success: false
             }
         },
-        created() {
+        async created() {
+            this.review.id = this.$route.params.id;
+            this.loading = true;
+
+            try {
+                this.existingReview = (await axios.get(
+                    `/api/reviews/${this.review.id}`
+                )).data.data;
+            } catch (error) {
+                if (is404(error)) {
+                    try {
+                        this.booking = (await axios.get(
+                            `/api/booking-by-review/${this.review.id}`
+                        )).data.data;
+                    } catch (error) {
+                        this.error = !is404(error);
+                    }
+                } else {
+                    this.error = true;
+                }
+            }
+            this.loading = false;
+        },
+        /*created() {
             this.review.id = this.$route.params.id;
             this.loading = true;
             // If review already exists (in reviews table by id)
@@ -109,7 +137,7 @@
                 }).then(() => {
                 this.loading = false;
             });
-        },
+        },*/
         computed: {
             alreadyReviewed() {
                 return this.hasReview || !this.booking;
@@ -131,10 +159,11 @@
             submit() {
                 this.errors = null;
                 this.sending = true;
+                this.success = false;
                 // Store the review
                 axios.post('/api/reviews', this.review)
                     .then(response => {
-                        console.log(response);
+                        this.success = response.status === 201;
                     })
                     .catch(error => {
                         if (is422(error)) {
@@ -148,9 +177,6 @@
                         this.error = true;
                     })
                     .then(() => this.sending = false);
-            },
-            errorFor(field) {
-                return this.errors !== null && this.errors[field] ? this.errors[field] : null;
             }
         }
     }

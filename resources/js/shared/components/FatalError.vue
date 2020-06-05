@@ -6,12 +6,6 @@
     </div>
 </template>
 
-<script>
-    export default {
-        name: 'FatalError'
-    }
-</script>
-
 <style scoped>
     .error {
         color: #999;
