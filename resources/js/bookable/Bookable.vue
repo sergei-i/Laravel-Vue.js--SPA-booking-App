@@ -13,6 +13,7 @@
             </div>
             <review-list :bookable-id="this.$route.params.id"></review-list>
         </div>
+
         <div class="col-md-4 pb-4">
             <availability
                 :bookable-id="this.$route.params.id"
@@ -23,9 +24,31 @@
             <transition name="fade">
                 <price-breakdown v-if="price" :price="price" class="mb-4"></price-breakdown>
             </transition>
+
             <transition name="fade">
-                <button class="btn btn-outline-secondary btn-block" v-if="price">Book now</button>
+                <button
+                    class="btn btn-outline-secondary btn-block"
+                    v-if="price"
+                    @click="addToBasket"
+                    :disabled="inBasketAlready"
+                >
+                    Book now
+                </button>
             </transition>
+
+            <button
+                class="btn btn-outline-secondary btn-block"
+                v-if="inBasketAlready"
+                @click="removeFromBasket"
+            >
+                Remove from basket
+            </button>
+
+            <div v-if="inBasketAlready" class="mt-4 text-muted warning">
+                Seems like you've added this object to basket already.
+                If you want to change dates, remove from the basket first.
+            </div>
+
         </div>
     </div>
 </template>
@@ -74,10 +97,35 @@
                 } catch (error) {
                     this.price = null;
                 }
+            },
+            addToBasket() {
+                this.$store.dispatch('addToBasket', {
+                    bookable: this.bookable,
+                    price: this.price,
+                    dates: this.lastSearch
+                })
+            },
+            removeFromBasket() {
+                this.$store.dispatch('removeFromBasket', this.bookable.id);
             }
         },
-        computed: mapState({
-            lastSearch: 'lastSearch'
-        })
+        computed: {
+            ...mapState({
+                lastSearch: 'lastSearch'
+            }),
+            inBasketAlready() {
+                if (this.bookable === null) {
+                    return false;
+                }
+
+                return this.$store.getters.inBasketAlready(this.bookable.id);
+            }
+        }
     }
 </script>
+
+<style scoped>
+    .warning {
+        font-size: 0.7rem;
+    }
+</style>

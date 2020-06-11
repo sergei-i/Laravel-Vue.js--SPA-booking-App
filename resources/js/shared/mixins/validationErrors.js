@@ -6,7 +6,9 @@ export default {
     },
     methods: {
         errorFor(field) {
-            return this.errors !== null && this.errors[field] ? this.errors[field] : null;
+            return this.errors !== null && this.errors[field]
+                ? this.errors[field]
+                : null;
         }
     }
 };
