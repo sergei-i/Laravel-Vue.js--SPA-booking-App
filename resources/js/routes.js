@@ -3,6 +3,7 @@ import Bookables from './bookables/Bookables';
 import Bookable from './bookable/Bookable';
 import Review from './review/Review';
 import Basket from './basket/Basket';
+import NotFound from './shared/components/NotFound';
 
 const routes = [
     {
@@ -24,6 +25,25 @@ const routes = [
         path: '/basket',
         component: Basket,
         name: 'basket'
+    },
+    {
+        path: '/auth/login',
+        component: require('./auth/Login').default,
+        name: 'login'
+    },
+    {
+        path: '/auth/register',
+        component: require('./auth/Register').default,
+        name: 'register'
+    },
+    {
+        path: '/404',
+        name: '404',
+        component: NotFound,
+    },
+    {
+        path: '*',
+        redirect: '/404'
     }
 ]
 

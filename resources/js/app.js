@@ -23,6 +23,18 @@ Vue.component('v-errors', ValidationErrors);
 
 const store = new Vuex.Store(storeDefinition)
 
+// intercept requests or responses before they are handled by then or catch
+// https://github.com/axios/axios#interceptors
+window.axios.interceptors.response.use(
+    response => response,
+    error => {
+        if (error.response.status === 401) {
+            store.dispatch('logout');
+        }
+        return Promise.reject(error);
+    }
+);
+
 const app = new Vue({
     el: '#app',
     router,
@@ -30,7 +42,8 @@ const app = new Vue({
     components: {
         Index
     },
-    beforeCreate() {
-        this.$store.dispatch('loadStoredState');
+    async beforeCreate() {
+        await this.$store.dispatch('loadStoredState');
+        await this.$store.dispatch('loadUser');
     }
 });
